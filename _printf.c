@@ -1,77 +1,96 @@
-#include "holberton.h"
+#include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
+#include "holberton.h"
+
 /**
- * _printf - print format
- * @format:char * - string
- *
- * Return: int - string length
+ * _printf - recreates the printf function
+ * @format: string with format specifier
+ * Return: number of characters printed
  */
+
 int _printf(const char *format, ...)
 {
-	int len = 0;
-	const char *string;
-	va_list arg;
+	int char_count = 0;
+	int int_buff;
+	char *str;
+	char chr;
+	char sint_buff[10];
+	va_list vaList;
 
-	va_start(arg, format);
-	if (format)
+	va_start(vaList, format);
+
+	while (*format)
 	{
-		string = format;
-		len = get_strlen(string);
-		while (*format)
+		if (*format == '%')
 		{
-			if (*format == '%')
+			format++;
+			switch(*format)
 			{
+			case '%':
+				_putchar('%');
 				format++;
-				switch (*format)
-				{
-				case 's':
-				{
-					char *ret = va_arg(arg, char*);
-
-					while (*ret)
-					{
-						_putchar(*ret);
-						ret++;
-					}
-				}
+				char_count++;
 				break;
-				case 'c':
-				{
-					_putchar((char)va_arg(arg, int));
-				}
+			case 's':
+				str = va_arg(vaList, char *);
+				fputs(str, stdout);
+				format++;
+				char_count += strlen(str);
 				break;
-				case 'd':
-				{
-					int ret = va_arg(arg, int);
-
-					print_int(ret);
-				}
+			case 'c':
+				chr = va_arg(vaList, int);
+				_putchar(chr);
+				format++;
+				char_count++;
 				break;
-				case 'i':
-				{
-					int ret = va_arg(arg, int);
-
-					print_int(ret);
-				}
+			case 'i':
+			case 'd':
+				int_buff = va_arg(vaList, int);
+				itoa(int_buff, sint_buff, 10);
+				fputs(sint_buff, stdout);
+				format++;
+				char_count += strlen(sint_buff);
 				break;
-				case '%':
-				{
-					_putchar('%');
-				}
+			case 'u':
+				int_buff = va_arg(vaList, int);
+				itoa(int_buff, sint_buff, 10);
+				fputs(sint_buff, stdout);
+				format++;
+				char_count += strlen(sint_buff);
 				break;
-				default:
-				{
-					_putchar(*format);
-				}
+			case 'o':
+				int_buff = va_arg(vaList, int);
+				itoa(int_buff, sint_buff, 8);
+				fputs(sint_buff, stdout);
+				format++;
+				char_count += strlen(sint_buff);
 				break;
-				}
+			case 'x':
+			case 'X':
+				int_buff = va_arg(vaList, int);
+				itoa(int_buff, sint_buff, 16);
+				fputs(sint_buff, stdout);
+				format++;
+				char_count += strlen(sint_buff);
+				break;
+			case '\0':
+				break;
+			default:
+				_putchar(*format);
+				format++;
+				char_count += 2;
+				break;
 			}
-			else
+		}
+		else
 			{
 				_putchar(*format);
+				format++;
+				char_count++;
 			}
-			format++;
-		}
 	}
-	return (len);
+	va_end(vaList);
+	return (char_count);
 }
