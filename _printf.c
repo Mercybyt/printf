@@ -1,47 +1,77 @@
 #include "holberton.h"
-
+#include <stdarg.h>
 /**
- * _printf - produces output according to a format
- * @format: format string containing the characters and the specifiers
- * Description: this function will call the get_print() function that will
- * determine which printing function to call depending on the conversion
- * specifiers contained into fmt
- * Return: length of the formatted output string
+ * _printf - print format
+ * @format:char * - string
+ *
+ * Return: int - string length
  */
 int _printf(const char *format, ...)
 {
-	int (*pfunc)(va_list, flags_t *);
-	const char *p;
-	va_list arguments;
-	flags_t flags = {0, 0, 0};
+	int len = 0;
+	const char *string;
+	va_list arg;
 
-	register int count = 0;
-
-	va_start(arguments, format);
-	if (!format || (format[0] == '%' && !format[1]))
-		return (-1);
-	if (format[0] == '%' && format[1] == ' ' && !format[2])
-		return (-1);
-	for (p = format; *p; p++)
+	va_start(arg, format);
+	if (format)
 	{
-		if (*p == '%')
+		string = format;
+		len = get_strlen(string);
+		while (*format)
 		{
-			p++;
-			if (*p == '%')
+			if (*format == '%')
 			{
-				count += _putchar('%');
-				continue;
+				format++;
+				switch (*format)
+				{
+				case 's':
+				{
+					char *ret = va_arg(arg, char*);
+
+					while (*ret)
+					{
+						_putchar(*ret);
+						ret++;
+					}
+				}
+				break;
+				case 'c':
+				{
+					_putchar((char)va_arg(arg, int));
+				}
+				break;
+				case 'd':
+				{
+					int ret = va_arg(arg, int);
+
+					print_int(ret);
+				}
+				break;
+				case 'i':
+				{
+					int ret = va_arg(arg, int);
+
+					print_int(ret);
+				}
+				break;
+				case '%':
+				{
+					_putchar('%');
+				}
+				break;
+				default:
+				{
+					_putchar(*format);
+				}
+				break;
+				}
 			}
-			while (get_flag(*p, &flags))
-				p++;
-			pfunc = get_print(*p);
-			count += (pfunc)
-				? pfunc(arguments, &flags)
-				: _printf("%%%c", *p);
-		} else
-			count += _putchar(*p);
+			else
+			{
+				_putchar(*format);
+			}
+			format++;
+		}
 	}
-	_putchar(-1);
-	va_end(arguments);
-	return (count);
+	return (len);
 }
